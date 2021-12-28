@@ -11,6 +11,20 @@ from http import server
 
 stream_status = False
 
+HTML=b"""
+<html>
+<head>
+<title>Live Streaming</title>
+</head>
+
+<body>
+<center><h1>Live Streaming using PiCamera</h1></center>
+<center><img src="stream.mjpg" width='640' height='480' autoplay playsinline></center>
+</body>
+</html>
+"""
+
+
 class StreamingOutput(object):
     def __init__(self):
         self.frame = None
@@ -52,6 +66,12 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 logging.warning(
                     'Removed streaming client %s: %s',
                     self.client_address, str(e))
+        elif self.path == '/' or self.path == '/index.html':
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html')
+            self.end_headers()
+            self.wfile.write(HTML)
+            self.wfile.write(b'\r\n')
         else:
             self.send_error(404)
             self.end_headers()
